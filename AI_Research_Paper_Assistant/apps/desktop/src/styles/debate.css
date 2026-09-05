@@ -1,0 +1,140 @@
+/* Debate Mode UI Styles */
+
+.debate-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  margin: var(--space-md) 0;
+}
+
+.debate-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-lg);
+}
+
+.debate-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: rgba(var(--color-surface-rgb), 0.8);
+}
+
+.debate-column h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--color-border);
+}
+
+.debate-a {
+  border-left: 4px solid rgba(34, 197, 94, 0.5);
+}
+
+.debate-a h4 {
+  color: rgba(34, 197, 94, 0.8);
+}
+
+.debate-b {
+  border-left: 4px solid rgba(239, 68, 68, 0.5);
+}
+
+.debate-b h4 {
+  color: rgba(239, 68, 68, 0.8);
+}
+
+.debate-item {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.debate-item strong {
+  font-weight: 600;
+  color: var(--color-text);
+  display: inline-block;
+  min-width: 100px;
+}
+
+.debate-citations {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.debate-citations div {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.debate-conclusion {
+  padding: var(--space-lg);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.debate-conclusion h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-sm);
+}
+
+.debate-conclusion > div {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.debate-suggestions {
+  padding: var(--space-lg);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.debate-suggestions h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-warning);
+  margin-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-sm);
+}
+
+.debate-suggestions ol {
+  margin-left: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.debate-suggestions li {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  list-style-type: decimal;
+}
+
+/* Responsive: Stack columns on smaller screens */
+@media (max-width: 1024px) {
+  .debate-columns {
+    grid-template-columns: 1fr;
+  }
+}

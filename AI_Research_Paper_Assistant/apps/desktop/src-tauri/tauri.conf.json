@@ -1,0 +1,55 @@
+{
+  "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/dev/crates/tauri-config-schema/schema.json",
+  "productName": "ResearchMind VN",
+  "version": "0.6.0",
+  "identifier": "com.researchmind.desktop",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "ResearchMind VN",
+        "width": 1100,
+        "height": 750,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self' https://*.clerk.accounts.dev; connect-src 'self' http://127.0.0.1:8765 http://localhost:8765 https://researchmind-gateway.onrender.com https://researchmind-cloud-sync.viuphuthien.workers.dev https://researchmind.pages.dev https://*.clerk.accounts.dev https://*.accounts.dev; img-src 'self' asset: data: blob: http://127.0.0.1:8765 http://localhost:8765 https://*.googleusercontent.com https://img.clerk.com https://*.clerk.accounts.dev; style-src 'self' 'unsafe-inline'; font-src 'self' data:; media-src 'self' blob:; frame-src 'self' http://127.0.0.1:8765 http://localhost:8765 https://accounts.google.com https://*.accounts.dev https://*.clerk.accounts.dev"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico",
+        "icons/icon.png"
+      ],
+    "resources": [
+      "resources/"
+    ],
+    "windows": {
+      "wix": null,
+      "nsis": null
+    },
+    "macOS": {
+      "minimumSystemVersion": "10.15"
+    },
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+/* ============= Modern Minimal — flat icons ============= */
+.icon-3d {
+  transition: color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.icon-gradient {
+  stroke: currentColor !important;
+  color: var(--color-text-secondary);
+}
+
+.icon-brain { color: var(--color-text); }
+.icon-brain-img {
+  transition: opacity var(--transition-fast);
+  filter: none;
+  animation: none;
+}
+.icon-brain-img:hover {
+  transform: none;
+  opacity: 0.85;
+}
+.brain-icon-loading {
+  animation: iconSpin 1s linear infinite;
+}
+
+.icon-search,
+.icon-file-text,
+.icon-file-image,
+.icon-folder,
+.icon-folder-open,
+.icon-chart,
+.icon-chat,
+.icon-check,
+.icon-error {
+  color: currentColor;
+}
+
+.icon-spin {
+  animation: iconSpin 1s linear infinite;
+  color: var(--color-text-secondary);
+}
+
+@keyframes iconSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.nav-btn svg,
+.sidebar-title svg,
+.sidebar-stat-row svg {
+  vertical-align: middle;
+}
+
+.result-icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-secondary);
+}
+
+.footer svg {
+  vertical-align: middle;
+}
+
+.file-type-item svg {
+  vertical-align: middle;
+  margin-right: 4px;
+  color: var(--color-text-secondary);
+}
+
+.icon-with-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  vertical-align: middle;
+}
+
+.personal-brain-section-title .icon-with-text {
+  gap: 0.45em;
+}

@@ -1,0 +1,254 @@
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { IconCheck, IconError, IconSearch, IconDownload, IconChart, IconWarning, IconFileText, IconLink, IconWithText, IconArrowRight } from "../Icons";
+
+interface ClaimAnalysis {
+  total_claims: number;
+  cited_claims: number;
+  uncited_claims: number;
+  direct_sources: number;
+  indirect_sources: number;
+  suspicious_citations: number;
+  confidence_score: number; // backward-compatible citation coverage
+  citation_coverage_score: number;
+  evidence_support_score: number;
+  supported_claims: number;
+  partial_claims: number;
+  unsupported_claims: number;
+  uncited_claim_texts: string[];
+  suspicious_citation_texts: string[];
+}
+
+interface TrustPanelProps {
+  analysis: ClaimAnalysis;
+  onViewUncited?: () => void;
+  onFindMoreSources?: () => void;
+  onKeepOnlyCited?: () => void;
+  onExport?: () => void;
+}
+
+export const TrustPanel: React.FC<TrustPanelProps> = ({
+  analysis,
+  onViewUncited,
+  onFindMoreSources,
+  onKeepOnlyCited,
+  onExport,
+}) => {
+  const { t } = useTranslation();
+
+  const severityColor = (score: number): { bg: string; color: string; label: string } => {
+    if (score >= 80) return { bg: "rgba(16, 185, 129, 0.1)", color: "#10b981", label: t("trust.severity_high") };
+    if (score >= 60) return { bg: "rgba(251, 191, 36, 0.1)", color: "#f59e0b", label: t("trust.severity_medium") };
+    return { bg: "rgba(239, 68, 68, 0.1)", color: "#ef4444", label: t("trust.severity_low") };
+  };
+
+  const supportScore = analysis.evidence_support_score ?? analysis.confidence_score;
+  const severity = severityColor(supportScore);
+
+  if (!analysis || analysis.total_claims === 0) return null;
+
+  return (
+    <details className="trust-panel">
+      {/* Header */}
+      <summary className="trust-panel-header">
+        <div className="trust-panel-header-left">
+          <span className="trust-panel-icon"><IconCheck size={15} /></span>
+          <span className="trust-panel-header-title">{t("trust.report_title")}</span>
+        </div>
+        <div className="trust-panel-header-meta">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "3px 10px",
+              borderRadius: "7px",
+              background: severity.bg,
+              color: severity.color,
+              fontSize: "0.78rem",
+              fontWeight: 600,
+            }}
+          >
+            <span>{supportScore}%</span>
+            <span style={{ fontWeight: 400, opacity: 0.8 }}>{severity.label}</span>
+          </div>
+          <IconArrowRight className="trust-panel-chevron" size={15} />
+        </div>
+      </summary>
+
+      {/* Stats grid */}
+      <div
+        className="trust-panel-stats"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+          gap: "1px",
+          background: "var(--color-border)",
+        }}
+      >
+        {[
+          { label: t("trust.citation_coverage"), value: `${analysis.citation_coverage_score ?? analysis.confidence_score}%`, icon: IconChart },
+          { label: t("trust.cited_claims"), value: `${analysis.cited_claims}/${analysis.total_claims}`, icon: IconCheck, color: "#10b981" },
+          { label: t("trust.uncited_claims"), value: analysis.uncited_claims, icon: IconWarning, color: analysis.uncited_claims > 0 ? "#f59e0b" : undefined },
+          { label: t("trust.direct_sources"), value: analysis.direct_sources, icon: IconFileText },
+          { label: t("trust.partial_claims"), value: analysis.partial_claims ?? 0, icon: IconLink, color: "#f59e0b" },
+          { label: t("trust.suspicious_citations"), value: analysis.suspicious_citations, icon: IconSearch, color: analysis.suspicious_citations > 0 ? "#ef4444" : undefined },
+        ].map((stat, i) => (
+          <div
+            key={i}
+            className="trust-panel-stat"
+            style={{
+              padding: "6px 10px",
+              background: "var(--color-surface)",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <stat.icon size={14} style={stat.color ? { color: stat.color } : undefined} />
+            <div style={{ minWidth: 0 }}>
+              <div
+                style={{
+                  fontSize: "0.7rem",
+                  color: "var(--color-text-muted)",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {stat.label}
+              </div>
+              <div
+                style={{
+                  fontSize: "0.86rem",
+                  fontWeight: 700,
+                  color: stat.color || "var(--color-text)",
+                }}
+              >
+                {stat.value}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Uncited claims list */}
+      {analysis.uncited_claim_texts.length > 0 && (
+        <div style={{ padding: "7px 12px", borderTop: "1px solid var(--color-border)" }}>
+          <div
+            style={{
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              color: "#f59e0b",
+              marginBottom: "6px",
+            }}
+          >
+            <IconWithText icon={IconWarning} size={12}>
+              {t("trust.uncited_heading")}
+            </IconWithText>
+          </div>
+          {analysis.uncited_claim_texts.map((text, i) => (
+            <div
+              key={i}
+              style={{
+                padding: "4px 0",
+                fontSize: "0.75rem",
+                color: "var(--color-text-secondary, #a3a3a3)",
+                fontStyle: "italic",
+                borderBottom: i < analysis.uncited_claim_texts.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
+              }}
+            >
+              "{text.length > 120 ? text.slice(0, 120) + "..." : text}"
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Suspicious citations */}
+      {analysis.suspicious_citation_texts.length > 0 && (
+        <div style={{ padding: "7px 12px", borderTop: "1px solid var(--color-border)" }}>
+          <div
+            style={{
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              color: "#ef4444",
+              marginBottom: "6px",
+            }}
+          >
+            <IconWithText icon={IconSearch} size={12}>
+              {t("trust.suspicious_heading")}
+            </IconWithText>
+          </div>
+          {analysis.suspicious_citation_texts.map((text, i) => (
+            <div
+              key={i}
+              style={{
+                padding: "4px 0",
+                fontSize: "0.75rem",
+                color: "var(--color-text-secondary, #a3a3a3)",
+                fontStyle: "italic",
+              }}
+            >
+              "{text}"
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Actions */}
+      <div
+        className="trust-panel-actions"
+        style={{
+          display: "flex",
+          gap: "6px",
+          padding: "6px 12px",
+          borderTop: "1px solid var(--color-border)",
+          flexWrap: "wrap",
+        }}
+      >
+        {analysis.uncited_claims > 0 && (
+          <ActionButton label={t("trust.action_view_uncited")} icon={<IconError size={12} />} onClick={onViewUncited} />
+        )}
+        {analysis.uncited_claims > 0 && (
+          <ActionButton label={t("trust.action_find_sources")} icon={<IconSearch size={12} />} onClick={onFindMoreSources} />
+        )}
+        {analysis.uncited_claims > 0 && (
+          <ActionButton label={t("trust.action_keep_cited")} icon={<IconCheck size={12} />} onClick={onKeepOnlyCited} />
+        )}
+        <ActionButton label={t("trust.action_export_report")} icon={<IconDownload size={12} />} onClick={onExport} />
+      </div>
+    </details>
+  );
+};
+
+const ActionButton: React.FC<{ label: string; icon: React.ReactNode; onClick?: () => void }> = ({
+  label,
+  icon,
+  onClick,
+}) => (
+  <button
+    onClick={onClick}
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "4px",
+      padding: "3px 8px",
+      borderRadius: "6px",
+      border: "1px solid var(--color-border, #333)",
+      background: "rgba(255,255,255,0.03)",
+      color: "var(--color-text-secondary, #a3a3a3)",
+      cursor: onClick ? "pointer" : "default",
+      fontSize: "0.75rem",
+      fontWeight: 500,
+      transition: "all 0.15s",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+    }}
+    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.06)"; }}
+    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.03)"; }}
+  >
+    {icon}
+    {label}
+  </button>
+);

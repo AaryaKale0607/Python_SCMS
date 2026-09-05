@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResearchMind — AI Research Assistant & Literature Review Tool</title>
+  <meta name="description" content="Local-first AI research assistant. Manage papers, RAG chat with citations, critique, evidence matrix, literature review, and deep academic analysis." />
+  <meta name="keywords" content="AI research assistant, literature review, RAG chat, academic papers, local-first AI, research matrix, reference manager" />
+  <meta name="author" content="ResearchMind Team" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0d0f17" />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://researchmind.pages.dev/" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="icon.ico" />
+  <link rel="shortcut icon" href="icon.ico" />
+  <link rel="apple-touch-icon" href="icon.ico" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="ResearchMind — AI Research Assistant & Literature Review Tool" />
+  <meta property="og:description" content="Local-first AI research assistant. Manage papers, RAG chat with citations, critique, evidence matrix, literature review, and deep academic analysis." />
+  <meta property="og:image" content="https://researchmind.pages.dev/og.png" />
+  <meta property="og:url" content="https://researchmind.pages.dev/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="ResearchMind" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="ResearchMind — AI Research Assistant & Literature Review Tool" />
+  <meta name="twitter:description" content="Local-first AI research assistant. Manage papers, RAG chat with citations, critique, evidence matrix, literature review, and deep academic analysis." />
+  <meta name="twitter:image" content="https://researchmind.pages.dev/og.png" />
+
+  <!-- Preload fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Plausible Analytics -->
+  <script defer data-domain="researchmind.app" src="https://plausible.io/js/script.js"></script>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <a href="index.html" class="nav-brand">
+      <img src="icon.ico" alt="ResearchMind" class="nav-brand-img" loading="lazy" />
+      <span class="nav-brand-text">Research<span>Mind</span></span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="features.html">Features</a></li>
+      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="index.html#download" class="nav-cta">Download</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" type="button">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <section class="hero" id="home">
+    <video class="hero-bg-video" src="https://pub-06049211148f4c7981f606c8a8a71dac.r2.dev/intro.mp4" autoplay muted loop playsinline></video>
+    <div class="hero-bg-overlay"></div>
+    <div class="container">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Local-first · Open Source · v0.6
+      </div>
+      <h1 class="hero-title">
+        Academic Research with <br /><span class="gradient-text">AI Workspace</span>
+      </h1>
+      <p class="hero-desc">
+        A desktop app to manage your PDF library, perform semantic search,
+        chat with citations, critique papers, build evidence matrices, and
+        run deep analysis — choose Cloud Free, your own API, or go fully offline.
+      </p>
+      <div class="hero-actions">
+        <a href="#download" class="btn btn-primary">Download Free Trial</a>
+        <a href="https://github.com/ViuGiaLai/researchmind" class="btn btn-secondary" target="_blank" rel="noopener">GitHub</a>
+      </div>
+
+      <div class="hero-video-wrapper" id="heroVideo">
+        <video
+          src="https://pub-06049211148f4c7981f606c8a8a71dac.r2.dev/vide_sanpham_tv.mp4"
+          title="ResearchMind Demo"
+          playsinline
+        ></video>
+        <div class="shine"></div>
+        <div class="video-play-hint">
+          <svg viewBox="0 0 24 24"><polygon points="8,5 20,12 8,19 8,5"/></svg>
+        </div>
+        <div class="video-bar">
+          <div class="video-bar-track">
+            <div class="video-bar-fill" id="videoBarFill"></div>
+          </div>
+          <span class="video-bar-time" id="videoBarTime">0:00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust-bar">
+    <div class="container">
+      <p class="trust-label">Built with industry standards</p>
+      <div class="trust-logos">
+        <span class="trust-logo">Tauri</span>
+        <span class="trust-logo">FastAPI</span>
+        <span class="trust-logo">ChromaDB</span>
+        <span class="trust-logo">SQLite</span>
+        <span class="trust-logo">React</span>
+        <span class="trust-logo">TypeScript</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">v0.6 Features</span>
+        <h2 class="section-title">Built for researchers who value privacy &amp; performance</h2>
+        <p class="section-desc">Everything you need to manage, read, and synthesize research — all on your machine.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon blue">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </div>
+          <h3>Import &amp; Index</h3>
+          <p>PDF, DOCX, EPUB, BibTeX, RIS, Zotero. OCR for scanned PDFs, bge-m3 embedding + ChromaDB.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon purple">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+          <h3>Hybrid Search</h3>
+          <p>BM25 (SQLite FTS5) + vector semantic + cross-encoder rerank. Saved search, filter by collection/tag/year.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon teal">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3>RAG Chat</h3>
+          <p>Streaming, multi-paper, Evidence-only mode, citation panel, DOI verification, trust panel.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon emerald">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+          </div>
+          <h3>Review &amp; Screening</h3>
+          <p>Insights, screening board, 7-section review builder, comparison matrix, export DOCX/Markdown.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon amber">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-8 4 5 4-9"/></svg>
+          </div>
+          <h3>Evidence Matrix</h3>
+          <p>Extract claims by criterion, sourced quotes, visual comparison table across papers.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon rose">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          </div>
+          <h3>Graph &amp; Brain</h3>
+          <p>Paper relationship graph and personal brain — reading suggestions, tags, statistics over time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Workflow</span>
+        <h2 class="section-title">From paper to insight in 3 steps</h2>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3>Import &amp; Index</h3>
+          <p>Drag &amp; drop PDFs, sync Zotero, or scan folders. Your papers are parsed, chunked, and embedded automatically.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3>Search &amp; Chat</h3>
+          <p>Hybrid search finds anything instantly. Chat with your papers using RAG — every answer comes with citations.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3>Synthesize &amp; Export</h3>
+          <p>Build evidence matrices, generate structured reviews, compare papers, and export to DOCX, Markdown, or LaTeX.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Testimonials</span>
+        <h2 class="section-title">Loved by researchers worldwide</h2>
+      </div>
+      <div class="testimonial-marquee">
+        <div class="testimonial-track testimonial-track-left">
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimonial-text">"ResearchMind has completely changed how I manage my literature review. The hybrid search is incredibly fast, and the evidence matrix saved me weeks of work."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">JD</div>
+              <div class="testimonial-info">
+                <span class="testimonial-name">Dr. Jane Doe</span>
+                <span class="testimonial-role">PhD Candidate, CS</span>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimonial-text">"I was sceptical about local-first AI, but ResearchMind delivers. The critique mode is like having a senior colleague review my work."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">MS</div>
+              <div class="testimonial-info">
+                <span class="testimonial-name">Dr. Mark Smith</span>
+                <span class="testimonial-role">Postdoc, Epidemiology</span>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimonial-text">"The review builder alone is worth the subscription. I generated a 7-section literature review in minutes and exported to LaTeX."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">AL</div>
+              <div class="testimonial-info">
+                <span class="testimonial-name">Prof. Anna Lee</span>
+                <span class="testimonial-role">Associate Professor, History</span>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimonial-text">"ResearchMind has completely changed how I manage my literature review. The hybrid search is incredibly fast, and the evidence matrix saved me weeks of work."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">JD</div>
+              <div class="testimonial-info">
+                <span class="testimonial-name">Dr. Jane Doe</span>
+                <span class="testimonial-role">PhD Candidate, CS</span>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimonial-text">"I was sceptical about local-first AI, but ResearchMind delivers. The critique mode is like having a senior colleague review my work."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">MS</div>
+              <div class="testimonial-info">
+                <span class="testimonial-name">Dr. Mark Smith</span>
+                <span class="testimonial-role">Postdoc, Epidemiology</span>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimonial-text">"The review builder alone is worth the subscription. I generated a 7-section literature review in minutes and exported to LaTeX."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">AL</div>
+              <div class="testimonial-info">
+                <span class="testimonial-name">Prof. Anna Lee</span>
+                <span class="testimonial-role">Associate Professor, History</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-track testimonial-track-right">
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimonial-text">"I was sceptical about local-first AI, but ResearchMind delivers. The critique mode is like having a senior colleague review my work."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">MS</div>
+              <div class="testimonial-info">
+                <span class="testimonial-name">Dr. Mark Smith</span>
+                <span class="testimonial-role">Postdoc, Epidemiology</span>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimonial-text">"The review builder alone is worth the subscription. I generated a 7-section literature review in minutes and exported to LaTeX."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">AL</div>
+              <div class="testimonial-info">
+                <span class="testimonial-name">Prof. Anna Lee</span>
+                <span class="testimonial-role">Associate Professor, History</span>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimonial-text">"ResearchMind has completely changed how I manage my literature review. The hybrid search is incredibly fast, and the evidence matrix saved me weeks of work."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">JD</div>
+              <div class="testimonial-info">
+                <span class="testimonial-name">Dr. Jane Doe</span>
+                <span class="testimonial-role">PhD Candidate, CS</span>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimonial-text">"I was sceptical about local-first AI, but ResearchMind delivers. The critique mode is like having a senior colleague review my work."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">MS</div>
+              <div class="testimonial-info">
+                <span class="testimonial-name">Dr. Mark Smith</span>
+                <span class="testimonial-role">Postdoc, Epidemiology</span>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimonial-text">"The review builder alone is worth the subscription. I generated a 7-section literature review in minutes and exported to LaTeX."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">AL</div>
+              <div class="testimonial-info">
+                <span class="testimonial-name">Prof. Anna Lee</span>
+                <span class="testimonial-role">Associate Professor, History</span>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <p class="testimonial-text">"ResearchMind has completely changed how I manage my literature review. The hybrid search is incredibly fast, and the evidence matrix saved me weeks of work."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">JD</div>
+              <div class="testimonial-info">
+                <span class="testimonial-name">Dr. Jane Doe</span>
+                <span class="testimonial-role">PhD Candidate, CS</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">FAQ</span>
+        <h2 class="section-title">Frequently asked questions</h2>
+      </div>
+      <div style="max-width:720px;margin:0 auto;">
+        <div class="faq-item">
+          <h3 class="faq-question">Is my data private?</h3>
+          <p class="faq-answer">Yes. ResearchMind is local-first. Your PDFs, notes, and indexes stay on your machine. Cloud AI is only used when you explicitly enable it and send a query.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-question">Can I use ResearchMind offline?</h3>
+          <p class="faq-answer">Yes. Use local AI models (llama-server, GGUF) for fully offline operation. Library management and search work without any internet connection.</p>
+        </div>
+        <div class="faq-item">
+          <h3 class="faq-question">What happens to my data if I uninstall?</h3>
+          <p class="faq-answer">Local data persists in the application data directory. You can delete it from Settings or manually remove the ResearchMind folder.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="download">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">Download</span>
+        <h2 class="section-title">Get ResearchMind Desktop</h2>
+        <p class="section-desc">Built with Tauri v2 · Current version <strong>v0.6.0</strong>. Requires companion Python backend (auto-starts).</p>
+      </div>
+      <div class="download-grid">
+        <div class="download-card">
+          <div class="download-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.45H0V3.449zM0 12.45h9.75v9.45L0 20.551v-8.101zM11.25 1.9L24 0v11.55H11.25V1.9zm12.75 10.55V24l-12.75-1.9v-9.65H24z"/></svg></div>
+          <h3>Windows</h3>
+          <p class="download-desc">Windows 10 / 11 (64-bit)</p>
+          <a href="https://github.com/ViuGiaLai/researchmind/releases/latest" class="btn btn-primary btn-full" target="_blank" rel="noopener">Download Installer</a>
+          <span class="download-meta">v0.6.0 · Installer / Portable</span>
+        </div>
+        <div class="download-card">
+          <div class="download-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.029-3.91 1.183-4.961 3.014-2.117 3.675-.54 9.102 1.51 12.067 1.007 1.452 2.2 3.076 3.774 3.02 1.524-.059 2.098-.98 3.938-.98 1.829 0 2.365.98 3.96.95 1.624-.03 2.661-1.47 3.661-2.93 1.154-1.69 1.632-3.32 1.66-3.4-.03-.01-3.18-1.22-3.21-4.82-.03-3.02 2.48-4.47 2.58-4.53-1.42-2.08-3.62-2.3-4.4-2.36-2.035-.17-3.325 1.04-4.262 1.04zm3.09-4.556c.846-1.025 1.411-2.454 1.253-3.877-1.22.049-2.697.817-3.57 1.839-.77.889-1.442 2.338-1.262 3.738 1.353.104 2.733-.675 3.579-1.7z"/></svg></div>
+          <h3>macOS</h3>
+          <p class="download-desc">Apple Silicon &amp; Intel</p>
+          <a href="https://github.com/ViuGiaLai/researchmind/releases/latest" class="btn btn-secondary btn-full" target="_blank" rel="noopener">Download .dmg</a>
+          <span class="download-meta">v0.6.0 · Universal</span>
+        </div>
+        <div class="download-card">
+          <div class="download-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>
+          <h3>Linux</h3>
+          <p class="download-desc">Ubuntu · Debian · Fedora</p>
+          <a href="https://github.com/ViuGiaLai/researchmind/releases/latest" class="btn btn-secondary btn-full" target="_blank" rel="noopener">Download AppImage</a>
+          <span class="download-meta">v0.6.0 · AppImage / .deb</span>
+        </div>
+      </div>
+
+      <div class="specs-panel" style="margin-top:48px;">
+        <h4 class="specs-panel-title">System Requirements</h4>
+        <div class="specs-grid">
+          <div><h4>Dev Stack</h4><p>Node 22+, pnpm, Python 3.11+, Rust, Tauri CLI</p></div>
+          <div><h4>RAM</h4><p>8 GB minimum · 16 GB recommended (local LLM 7B)</p></div>
+          <div><h4>Storage</h4><p>~500 MB app + additional for index, cache, and GGUF models</p></div>
+        </div>
+        <p class="specs-hint">From source: <code>pnpm install</code> → <code>cd backend && pip install -r requirements.txt</code> → <code>pnpm tauri dev</code></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="cta-section">
+    <div class="container">
+      <div class="cta-card">
+        <h2>Ready to transform your research workflow?</h2>
+        <p>Download ResearchMind and start your 14-day free trial. No credit card required.</p>
+        <div class="cta-actions">
+          <a href="https://github.com/ViuGiaLai/researchmind/releases/latest" class="btn btn-primary" target="_blank" rel="noopener">Download Free Trial</a>
+          <a href="https://github.com/ViuGiaLai/researchmind" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-brand-top">
+            <img src="icon.ico" alt="ResearchMind" class="footer-brand-img" loading="lazy" />
+            <span class="footer-brand-name">Research<span>Mind</span></span>
+          </div>
+          <p class="footer-brand-desc">AI-powered research workspace for academics. Your data stays on your machine. Cloud AI is optional.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul><li><a href="features.html">Features</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="index.html#download">Download</a></li><li><a href="https://github.com/ViuGiaLai/researchmind/releases">Releases</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul><li><a href="docs.html">Documentation</a></li><li><a href="blog.html">Blog</a></li><li><a href="legal.html#privacy">Privacy Policy</a></li><li><a href="legal.html#terms">Terms of Service</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <ul><li><a href="https://github.com/ViuGiaLai/researchmind" target="_blank">GitHub</a></li><li><a href="mailto:support@researchmind.app">Email</a></li><li><a href="legal.html#support">Support</a></li></ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">&copy; 2026 ResearchMind &mdash; MIT License &bull; Local-first research AI</p>
+        <div class="footer-social"><a href="https://github.com/ViuGiaLai/researchmind" target="_blank">GitHub</a><a href="legal.html#support">Support</a></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

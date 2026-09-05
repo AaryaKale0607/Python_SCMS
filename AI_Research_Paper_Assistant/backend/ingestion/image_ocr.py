@@ -1,0 +1,218 @@
+"""OCR helpers for embedded and standalone images during document import."""
+
+from __future__ import annotations
+
+import re
+import threading
+from io import BytesIO
+
+from loguru import logger
+
+# OCR initialization and inference share a lock. It must be re-entrant because
+# ocr_image_bytes holds it while get_ocr_engine performs lazy initialization.
+_ocr_lock = threading.RLock()
+_global_ocr_engine = None
+_MISSING = object()
+
+MIN_IMAGE_DIM = 80
+MIN_IMAGE_BYTES = 4096
+MAX_IMAGES_PER_PAGE = 8
+MAX_IMAGES_PER_DOC = 40
+OCR_MIN_EDGE = 1200  # upscale small diagrams/flowcharts for better OCR
+
+FIGURE_CAPTION_RE = re.compile(
+    r"(?:Hình|HÌNH|Figure|Fig\.?)\s*(\d+)\s*[.:]\s*([^\n]+)",
+    re.IGNORECASE,
+)
+
+
+def get_ocr_engine():
+    global _global_ocr_engine
+    with _ocr_lock:
+        if _global_ocr_engine is None:
+            try:
+                from rapidocr_onnxruntime import RapidOCR
+
+                _global_ocr_engine = RapidOCR()
+            except ImportError:
+                logger.warning("OCR engine not available (install rapidocr-onnxruntime + opencv-python)")
+                _global_ocr_engine = _MISSING
+        return None if _global_ocr_engine is _MISSING else _global_ocr_engine
+
+
+def _image_dimensions(image_bytes: bytes) -> tuple[int, int] | None:
+    try:
+        from PIL import Image
+
+        with Image.open(BytesIO(image_bytes)) as img:
+            return img.size
+    except Exception:
+        return None
+
+
+def _find_figure_captions(page_text: str) -> dict[int, str]:
+    captions: dict[int, str] = {}
+    for match in FIGURE_CAPTION_RE.finditer(page_text or ""):
+        try:
+            captions[int(match.group(1))] = match.group(2).strip()
+        except ValueError:
+            continue
+    return captions
+
+
+def _prepare_image_for_ocr(image_bytes: bytes) -> bytes:
+    """Upscale small embedded figures so OCR reads flowchart labels better."""
+    try:
+        from PIL import Image
+
+        with Image.open(BytesIO(image_bytes)) as img:
+            if img.mode not in ("RGB", "L"):
+                img = img.convert("RGB")
+            width, height = img.size
+            min_edge = min(width, height)
+            if min_edge < OCR_MIN_EDGE:
+                scale = OCR_MIN_EDGE / min_edge
+                img = img.resize(
+                    (int(width * scale), int(height * scale)),
+                    Image.Resampling.LANCZOS,
+                )
+            buf = BytesIO()
+            img.save(buf, format="PNG")
+            return buf.getvalue()
+    except Exception:
+        return image_bytes
+
+
+def ocr_image_bytes(
+    image_bytes: bytes,
+    min_chars: int = 3,
+    *,
+    skip_byte_size_check: bool = False,
+) -> str | None:
+    """Run OCR on raw image bytes; returns None if image is too small or unreadable."""
+    if not image_bytes or len(image_bytes) < 64:
+        return None
+
+    dims = _image_dimensions(image_bytes)
+    if not dims:
+        return None
+    width, height = dims
+    if width < MIN_IMAGE_DIM or height < MIN_IMAGE_DIM:
+        return None
+
+    if not skip_byte_size_check and len(image_bytes) < MIN_IMAGE_BYTES:
+        return None
+
+    try:
+        prepared = _prepare_image_for_ocr(image_bytes)
+        with _ocr_lock:
+            engine = get_ocr_engine()
+            results, _ = engine(prepared)
+        if not results:
+            return None
+        lines = [str(res[1]).strip() for res in results if res and len(res) > 1 and str(res[1]).strip()]
+        text = "\n".join(lines).strip()
+        if text:
+            try:
+                from .metadata_quality import normalize_ocr_page_text
+
+                text = normalize_ocr_page_text(text)
+            except Exception:
+                pass
+        return text if len(text) >= min_chars else None
+    except Exception as exc:
+        logger.warning(f"Image OCR failed: {exc}")
+        return None
+
+
+def extract_pdf_page_image_text(
+    page,
+    doc,
+    *,
+    page_num: int = 0,
+    page_text: str = "",
+    max_images: int = MAX_IMAGES_PER_PAGE,
+) -> list[str]:
+    """OCR embedded images on a PDF page (figures, charts, scanned snippets)."""
+    snippets: list[str] = []
+    captions = _find_figure_captions(page_text)
+    try:
+        images = page.get_images(full=True)
+    except Exception:
+        return snippets
+
+    for idx, img_info in enumerate(images[:max_images]):
+        xref = img_info[0]
+        try:
+            base = doc.extract_image(xref)
+            width = int(base.get("width") or 0)
+            height = int(base.get("height") or 0)
+            if width < MIN_IMAGE_DIM or height < MIN_IMAGE_DIM:
+                continue
+            img_bytes = base.get("image")
+            if not img_bytes:
+                continue
+            ocr_text = ocr_image_bytes(img_bytes, skip_byte_size_check=True)
+            if not ocr_text:
+                continue
+
+            fig_num = idx + 1
+            caption = captions.get(fig_num, "")
+            if not caption and len(captions) == 1:
+                caption = next(iter(captions.values()), "")
+
+            label = f"Figure {fig_num}" if fig_num in captions or caption else f"Image {fig_num}"
+            page_label = f" p. {page_num}" if page_num else ""
+            header = f"[Image content {label}{page_label}]"
+            if caption:
+                header += f": {caption}"
+            snippets.append(f"{header}\n{ocr_text}")
+        except Exception as exc:
+            logger.debug(f"Skip PDF image xref={xref}: {exc}")
+    return snippets
+
+
+DOCX_IMAGE_RELTYPE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"
+
+
+def extract_docx_image_text(doc, max_images: int = MAX_IMAGES_PER_DOC) -> list[str]:
+    """OCR images embedded in a DOCX file."""
+    snippets: list[str] = []
+    seen_hashes: set[int] = set()
+    img_count = 0
+
+    for rel in doc.part.rels.values():
+        if img_count >= max_images:
+            break
+        if rel.reltype != DOCX_IMAGE_RELTYPE:
+            continue
+        try:
+            blob = rel.target_part.blob
+            if not blob:
+                continue
+            blob_key = hash(blob[:512])
+            if blob_key in seen_hashes:
+                continue
+            seen_hashes.add(blob_key)
+
+            ocr_text = ocr_image_bytes(blob, skip_byte_size_check=True)
+            if ocr_text:
+                img_count += 1
+                snippets.append(f"[Image content {img_count}]: {ocr_text}")
+        except Exception as exc:
+            logger.debug(f"Skip DOCX image: {exc}")
+    return snippets
+
+
+def extract_docx_table_text(doc) -> list[str]:
+    """Flatten DOCX tables into searchable plain text."""
+    parts: list[str] = []
+    for table_index, table in enumerate(doc.tables):
+        rows_text: list[str] = []
+        for row in table.rows:
+            cells = [cell.text.strip() for cell in row.cells if cell.text.strip()]
+            if cells:
+                rows_text.append(" | ".join(cells))
+        if rows_text:
+            parts.append(f"[Table {table_index + 1}]\n" + "\n".join(rows_text))
+    return parts

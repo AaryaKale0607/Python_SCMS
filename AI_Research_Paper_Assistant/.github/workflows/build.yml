@@ -1,0 +1,317 @@
+name: Lint & Test
+
+on:
+  push:
+    branches: [ "main", "feature/*", "develop" ]
+    paths:
+      - "apps/desktop/**"
+      - "apps/cloud-sync/**"
+      - "cloud_gateway/**"
+      - "backend/**"
+      - "docs/**"
+      - ".github/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "backend.spec"
+  pull_request:
+    branches: [ "main", "develop" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+      rust: ${{ steps.filter.outputs.rust }}
+      cloud_sync: ${{ steps.filter.outputs.cloud_sync }}
+      gateway: ${{ steps.filter.outputs.gateway }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'apps/desktop/src/**'
+              - 'apps/desktop/package.json'
+              - 'apps/desktop/pnpm-lock.yaml'
+              - 'apps/desktop/vite.config.ts'
+              - 'apps/desktop/tsconfig.json'
+            backend:
+              - 'backend/**'
+              - 'backend.spec'
+            rust:
+              - 'apps/desktop/src-tauri/**'
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+            cloud_sync:
+              - 'apps/cloud-sync/**'
+            gateway:
+              - 'cloud_gateway/**'
+
+  # ──────────────────────────────────────────────
+  # Backend Jobs
+  # ──────────────────────────────────────────────
+  lint-python:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-lint-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-lint-
+
+      - run: pip install ruff
+
+      - name: Ruff check
+        run: ruff check .
+        working-directory: backend
+
+      - name: Ruff format check
+        run: ruff format --check .
+        working-directory: backend
+
+  test-backend-unit:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-unit-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-unit-
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt pytest-timeout pytest-cov
+
+      - name: Run unit tests (exclude integration)
+        run: python -m pytest tests -q --timeout=120 -m "not integration" --cov=. --cov-report=term --cov-report=xml --cov-fail-under=30
+        working-directory: backend
+
+      - name: Upload coverage to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: backend/coverage.xml
+          retention-days: 7
+
+  test-backend-integration:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-int-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-int-
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt pytest-timeout
+
+      - name: Run integration tests
+        run: python -m pytest tests -q --timeout=180 -m "integration"
+        working-directory: backend
+
+  test-rag-quality:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-rag-${{ hashFiles('backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-rag-
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: RAG recall quality gate
+        run: python -m evaluation.benchmark evaluation/fixtures/rag_smoke.json --min-recall 0.7 --min-mrr 0.6
+        working-directory: backend
+
+  # ──────────────────────────────────────────────
+  # Frontend Jobs
+  # ──────────────────────────────────────────────
+  lint-frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: apps/desktop/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+        working-directory: apps/desktop
+
+      - run: pnpm exec tsc --noEmit
+        working-directory: apps/desktop
+
+      - run: pnpm test
+        working-directory: apps/desktop
+
+      - run: pnpm run validate:locales
+        working-directory: apps/desktop
+
+      - run: pnpm run validate:hooks
+        working-directory: apps/desktop
+
+      - run: pnpm build
+        working-directory: apps/desktop
+
+  # ──────────────────────────────────────────────
+  # Cloud Worker Jobs
+  # ----------------------------------------------------------------
+  typecheck-cloud-sync:
+    needs: changes
+    if: needs.changes.outputs.cloud_sync == 'true' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: apps/cloud-sync/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+        working-directory: apps/cloud-sync
+
+      - run: pnpm typecheck
+        working-directory: apps/cloud-sync
+
+  deploy-cloud-sync:
+    needs: [changes, typecheck-cloud-sync]
+    if: >
+      needs.changes.outputs.cloud_sync == 'true'
+      && github.ref == 'refs/heads/main'
+      && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: apps/cloud-sync/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: apps/cloud-sync
+
+      - name: Deploy cloud-sync worker
+        run: pnpm deploy
+        working-directory: apps/cloud-sync
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  test-cloud-gateway:
+    needs: changes
+    if: needs.changes.outputs.gateway == 'true' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: cloud_gateway/requirements.txt
+
+      - name: Install gateway dependencies
+        run: pip install -r cloud_gateway/requirements.txt pytest-timeout
+
+      - name: Run gateway tests
+        run: python -m pytest cloud_gateway/tests -q --timeout=120 -c cloud_gateway/pytest.ini
+
+  # Rust Jobs
+  # ──────────────────────────────────────────────
+  lint-rust:
+    needs: changes
+    if: needs.changes.outputs.rust == 'true' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libglib2.0-dev \
+            libgtk-3-dev \
+            libwebkit2gtk-4.1-dev \
+            libjavascriptcoregtk-4.1-dev \
+            libsoup-3.0-dev
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - uses: Swatinem/rust-cache@v2
+
+      - run: cargo clippy -- -D warnings
+
+      - run: cargo fmt --check
