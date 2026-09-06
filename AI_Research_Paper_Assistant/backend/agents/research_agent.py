@@ -27,15 +27,49 @@ class ResearchAgent(BaseAgent):
 
         try:
             if step == "parse":
-                # Parse query into intent and scope
-                intent = "academic_research"
-                scope = ctx.query.strip()
+                # Classify the user's research task before retrieval.
+                query = ctx.query.strip()
+                query_lower = query.lower()
+
+                if any(
+                    keyword in query_lower
+                    for keyword in ("research gap", "research gaps", "gap in", "unexplored", "open problem")
+                ):
+                    intent = "RESEARCH_GAP"
+
+                elif any(
+                    keyword in query_lower
+                    for keyword in ("compare", "comparison", "versus", " vs ", "difference between")
+                ):
+                    intent = "PAPER_COMPARISON"
+
+                elif any(
+                    keyword in query_lower
+                    for keyword in ("conflict", "conflicts", "contradiction", "contradictions", "disagree")
+                ):
+                    intent = "CONFLICT_ANALYSIS"
+
+                elif any(
+                    keyword in query_lower
+                    for keyword in ("research topic", "research topics", "topic idea", "novel topic")
+                ):
+                    intent = "RESEARCH_TOPIC"
+
+                else:
+                    intent = "PAPER_QA"
+
                 return AgentResult(
                     agent=self.name,
                     step="parse",
                     success=True,
-                    output={"intent": intent, "scope": scope},
-                    metadata={"governance_version": gov.version},
+                    output={
+                        "intent": intent,
+                        "scope": query,
+                    },
+                    metadata={
+                        "governance_version": gov.version,
+                        "routing": "rule_based",
+                    },
                 )
 
             elif step == "retrieve":
