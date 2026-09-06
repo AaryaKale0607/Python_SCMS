@@ -146,7 +146,7 @@ async def api_run_pipeline(body: dict = Body(...)):
             "steps": [
                 {
                     "step": s.step,
-                    "agent": s.agent_name,
+                    "agent": s.agent,
                     "success": s.success,
                     "output_preview": str(s.output)[:200] if s.output else None,
                     "errors": s.errors[:3],
@@ -156,8 +156,8 @@ async def api_run_pipeline(body: dict = Body(...)):
             "final_output_preview": str(result.final_output)[:500] if result.final_output else None,
             "evaluation": {
                 "overall_quality": result.evaluation.overall_quality if result.evaluation else None,
-                "citation_accuracy": result.evaluation.citation_accuracy if result.evaluation else None,
-                "factual_consistency": result.evaluation.factual_consistency if result.evaluation else None,
+                "citation_correctness": result.evaluation.citation_correctness if result.evaluation else None,
+                "hallucination_score": result.evaluation.hallucination_score if result.evaluation else None,
             }
             if result.evaluation
             else None,
